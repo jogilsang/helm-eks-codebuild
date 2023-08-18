@@ -49,5 +49,5 @@ phases:
     commands:
       - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
       - sleep 60
-      - GO_APP_ENDPOINT=`kubectl get ingress $HELM_RELEASE_NAME-$ENV -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"`
+      - GO_APP_ENDPOINT=`kubectl get ingress $HELM_RELEASE_NAME-$HELM_DIR -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"`
       - echo -e "\nThe Go application can be accessed nw via http://$GO_APP_ENDPOINT/"
