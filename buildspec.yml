@@ -1,0 +1,53 @@
+version: 0.2
+phases:
+  install: # Install kubectl, Helm3
+    commands:
+       - curl -O https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.1/2023-04-19/bin/linux/amd64/kubectl 
+       - chmod +x kubectl
+       - mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$HOME/bin:$PATH
+         
+         #- curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
+         #- chmod +x ./aws-iam-authenticator
+         #- mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$HOME/bin:$PATH 
+
+       - curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 > get_helm.sh
+       - chmod 700 get_helm.sh && ./get_helm.sh
+       - helm repo add stable https://charts.helm.sh/stable && helm repo update
+       
+         #- yum install -y jq
+         #- ARCH=amd64
+         #- PLATFORM=$(uname -s)_$ARCH
+         #- curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_$PLATFORM.tar.gz"
+         #- tar -xzf eksctl_$PLATFORM.tar.gz -C /tmp && rm eksctl_$PLATFORM.tar.gz
+         #- mv /tmp/eksctl /usr/local/bin
+
+  pre_build: # Check helm version and Add kubeconfig to access to EKS cluster and check readiness of the cluster
+    commands:
+      - aws sts get-caller-identity
+        #- TEMP_ROLE=$(aws sts assume-role --role-arn $CODEBUILD_ROLE_ARN --role-session-name codebuild-default-role)
+        #- export TEMP_ROLE
+        #- export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
+        #- export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
+        #- export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken') 
+        #- EKS_TEMP_ROLE=$(aws sts get-caller-identity | jq -r '.Arn')
+     
+      - helm version
+      - mkdir ~/.kube/
+      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $CODEBUILD_ROLE_ARN
+      - chmod 0600 ~/.kube/config
+        # - ROLEARN=$(aws sts get-caller-identity | grep -oP '"Arn": "\K[^"]+(?=")')
+        # - eksctl create iamidentitymapping --cluster $EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION --arn $ROLEARN --username codebuild-deploy:{{SessionName}} --group system:masters
+
+  build: # Deploy app via Helm
+    commands:
+      #- kubectl config view --minify
+      #- kubectl get pod
+      - ECR_TAG=$(aws ecr describe-images --repository-name $ECR_REPO_NAME --query 'reverse(sort_by(imageDetails,& imagePushedAt)) | [0].imageTags[1]' --filter 'tagStatus=TAGGED' --output text)
+      - helm upgrade -i $HELM_RELEASE_NAME $HELM_DIR -f $HELM_DIR/values.yaml --set image.tag=$ECR_TAG
+
+  post_build: # Display the endpoint of the application
+    commands:
+      - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
+      - sleep 60
+      - GO_APP_ENDPOINT=`kubectl get ingress $HELM_RELEASE_NAME-$ENV -o jsonpath="{.status.loadBalancer.ingress[*].hostname}"`
+      - echo -e "\nThe Go application can be accessed nw via http://$GO_APP_ENDPOINT/"
