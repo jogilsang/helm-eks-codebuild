@@ -1,2 +1,2 @@
-# helm-eks-codebuild
-helm-eks-codebuild
+# repo-eks-manifest
+repo-eks-manifest
