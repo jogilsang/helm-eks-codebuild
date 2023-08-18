@@ -33,7 +33,7 @@ phases:
      
       - helm version
       - mkdir ~/.kube/
-      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $CODEBUILD_ROLE_ARN
+      - aws eks --region $AWS_DEFAULT_REGION update-kubeconfig --name $EKS_CLUSTER_NAME --role-arn $CB_ROLE_ARN
       - chmod 0600 ~/.kube/config
         # - ROLEARN=$(aws sts get-caller-identity | grep -oP '"Arn": "\K[^"]+(?=")')
         # - eksctl create iamidentitymapping --cluster $EKS_CLUSTER_NAME --region $AWS_DEFAULT_REGION --arn $ROLEARN --username codebuild-deploy:{{SessionName}} --group system:masters
