@@ -42,12 +42,8 @@ phases:
     commands:
       #- kubectl config view --minify
       #- kubectl get pod
-      - ECR_TAG=$(aws ecr describe-images --repository-name $ECR_REPO_NAME --query 'reverse(sort_by(imageDetails,& imagePushedAt)) | [0].imageTags[0]' --filter 'tagStatus=TAGGED' --output text)
-      - 
-      - helm upgrade -i $HELM_RELEASE_NAME $HELM_DIR -f $HELM_DIR/values.yaml --set image.tag=$ECR_TAG
-
       - |
-        ECR_TAGS=$(aws ecr describe-images --repository-name $IMAGE_RO_NAME --query 'reverse(sort_by(imageDetails,& imagePushedAt)) | [0].imageTags[]' --filter 'tagStatus=TAGGED' --output text)
+        ECR_TAGS=$(aws ecr describe-images --repository-name $ECR_REPO_NAME --query 'reverse(sort_by(imageDetails,& imagePushedAt)) | [0].imageTags[]' --filter 'tagStatus=TAGGED' --output text)
         echo "ECR_TAG=$ECR_TAG"
         IFS=$'\t' read -ra TAGS <<< "$ECR_TAGS"
         if [[ " ${TAGS[@]} " =~ " latest " ]]; then
@@ -62,7 +58,8 @@ phases:
           echo "${TAGS[0]}"
           ECR_TAG="${TAGS[0]}"
         fi
-
+      - helm upgrade -i $HELM_RELEASE_NAME $HELM_DIR -f $HELM_DIR/values.yaml --set image.tag=$ECR_TAG
+  
   post_build: # Display the endpoint of the application
     commands:
       - bash -c "if [ /"$CODEBUILD_BUILD_SUCCEEDING/" == /"0/" ]; then exit 1; fi"
