@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: 247553399539.dkr.ecr.ap-northeast-2.amazonaws.com/rg-app-source-docker-image
+  repository: [AWS account-id 12자리].dkr.ecr.ap-northeast-2.amazonaws.com/[ECR REPO이름, EX : rg-app-source-docker-image]
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
