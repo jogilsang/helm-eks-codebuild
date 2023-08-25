@@ -51,7 +51,7 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/group.name: eks-test-group
     alb.ingress.kubernetes.io/group.order: '1'
-    alb.ingress.kubernetes.io/subnets:  subnet-0fa00f5332cbb3e5d,subnet-0bbfcffd3182e3162,subnet-0c8f6a1578785e4f6
+    alb.ingress.kubernetes.io/subnets:  [EKS Cluster의 Public-Subnet-1],[EKS Cluster의 Public-Subnet-2],[EKS Cluster의 Public-Subnet-3 (Optional)]
   hosts:
     - paths:
         - path: /
