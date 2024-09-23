@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: [AWS account-id 12자리].dkr.ecr.ap-northeast-2.amazonaws.com/[ECR REPO이름, EX : rg-app-source-docker-image]
+  repository: [AWS_ACCOUNT_ID].dkr.ecr.[AWS_DEFAULT_REGION].amazonaws.com/[ECR_REPO_NAME]
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -51,7 +51,7 @@ ingress:
     alb.ingress.kubernetes.io/target-type: ip
     alb.ingress.kubernetes.io/group.name: eks-test-group
     alb.ingress.kubernetes.io/group.order: '1'
-    alb.ingress.kubernetes.io/subnets:  [EKS Cluster의 Public-Subnet-1],[EKS Cluster의 Public-Subnet-2],[EKS Cluster의 Public-Subnet-3 (Optional)]
+    alb.ingress.kubernetes.io/subnets: [ALB_PUBLIC_SUBNET_1],[ALB_PUBLIC_SUBNET_2]
   hosts:
     - paths:
         - path: /
