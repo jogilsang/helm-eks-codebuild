@@ -67,11 +67,11 @@ phases:
       - echo $ALB_PUBLIC_SUBNET_1
       - echo $ALB_PUBLIC_SUBNET_2
       
-      - sed -i "s|[AWS_ACCOUNT_ID]|$AWS_ACCOUNT_ID|" $HELM_DIR/values.yaml
-      - sed -i "s|[AWS_DEFAULT_REGION]|$AWS_DEFAULT_REGION|" $HELM_DIR/values.yaml
-      - sed -i "s|[ECR_REPO_NAME]|$ECR_REPO_NAME|" $HELM_DIR/values.yaml
-      - sed -i "s|[ALB_PUBLIC_SUBNET_1]|$ALB_PUBLIC_SUBNET_1|" $HELM_DIR/values.yaml
-      - sed -i "s|[ALB_PUBLIC_SUBNET_2]|$ALB_PUBLIC_SUBNET_2|" $HELM_DIR/values.yaml
+      - sed -i "s/AWS_ACCOUNT_ID/$AWS_ACCOUNT_ID/" $HELM_DIR/values.yaml
+      - sed -i "s/AWS_DEFAULT_REGION/$AWS_DEFAULT_REGION/" $HELM_DIR/values.yaml
+      - sed -i "s/ECR_REPO_NAME/$ECR_REPO_NAME/" $HELM_DIR/values.yaml
+      - sed -i "s/ALB_PUBLIC_SUBNET_1/$ALB_PUBLIC_SUBNET_1/" $HELM_DIR/values.yaml
+      - sed -i "s/ALB_PUBLIC_SUBNET_2/$ALB_PUBLIC_SUBNET_2/" $HELM_DIR/values.yaml
 
       - cat $HELM_DIR/values.yaml
       
