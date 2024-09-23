@@ -60,6 +60,13 @@ phases:
           echo "${TAGS[0]}"
           ECR_TAG="${TAGS[0]}"
         fi
+      
+      - sed -i -e "s|[AWS_ACCOUNT_ID]|${AWS_ACCOUNT_ID}|" $HELM_DIR/values.yaml
+      - sed -i -e "s|[AWS_DEFAULT_REGION]|${AWS_DEFAULT_REGION}|" $HELM_DIR/values.yaml
+      - sed -i -e "s|[ECR_REPO_NAME]|${ECR_REPO_NAME}|" $HELM_DIR/values.yaml
+      - sed -i -e "s|[ALB_PUBLIC_SUBNET_1]|${ALB_PUBLIC_SUBNET_1}|" $HELM_DIR/values.yaml
+      - sed -i -e "s|[ALB_PUBLIC_SUBNET_2]|${ALB_PUBLIC_SUBNET_2}|" $HELM_DIR/values.yaml
+      
       - helm upgrade -i $HELM_RELEASE_NAME $HELM_DIR -f $HELM_DIR/values.yaml --set image.tag=$ECR_TAG
   
   post_build: # Display the endpoint of the application
